@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added `.codex-plugin/plugin.json` with Jam listing metadata, reusing the existing MCP configuration, skills, and logo.
+- Documented Codex installation from GitHub and a local checkout using the existing `jam-plugins` marketplace.
+
 ## 1.4.1
 
 - Documented GitHub Copilot CLI install. Copilot CLI reads the `.claude-plugin/` manifest and marketplace, so `copilot plugin install jam@jam-plugins` works with no new files.

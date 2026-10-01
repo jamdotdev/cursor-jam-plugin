@@ -1,0 +1,33 @@
+{
+  "name": "jam",
+  "version": "1.4.1",
+  "description": "Investigate Jam bug reports using recordings, console logs, network requests, and user events.",
+  "author": {
+    "name": "Jam",
+    "email": "support@jam.dev"
+  },
+  "homepage": "https://jam.dev",
+  "repository": "https://github.com/jamdotdev/jam-plugin",
+  "license": "MIT",
+  "keywords": [
+    "jam",
+    "bug-reports",
+    "debugging",
+    "mcp",
+    "session-replay",
+    "observability"
+  ],
+  "mcpServers": "./mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Jam",
+    "shortDescription": "Investigate Jam bug reports",
+    "longDescription": "Investigate Jam bug reports using recordings, console logs, network requests, and user events.",
+    "developerName": "Jam",
+    "category": "Developer Tools",
+    "websiteURL": "https://jam.dev",
+    "defaultPrompt": "Investigate this Jam link and explain the likely root cause.",
+    "logo": "./assets/logo.png",
+    "composerIcon": "./assets/logo.png"
+  }
+}
