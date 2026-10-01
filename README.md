@@ -21,7 +21,7 @@
 
 Paste a Jam link into your coding agent, and it reads the recording, console logs, network requests, and user events on its own. You skip typing out repro steps and copying stack traces.
 
-The plugin works in Cursor, Claude Code, GitHub Copilot CLI, and Gemini CLI. In each one, it connects the Jam Model Context Protocol (MCP) server and adds two skills.
+The plugin works in Cursor, Claude Code, Codex, GitHub Copilot CLI, and Gemini CLI. In each one, it connects the Jam Model Context Protocol (MCP) server and adds two skills.
 
 ## Install the plugin
 
@@ -46,6 +46,24 @@ Then run **Developer: Reload Window** from the command palette (`Cmd+Shift+P`).
 
 The skills load as `/jam:investigate-bug` and `/jam:jam-cli`. To test an unreleased version, start Claude Code with `claude --plugin-dir /path/to/jam-plugin`.
 
+### Codex
+
+```bash
+codex plugin marketplace add jamdotdev/jam-plugin
+codex plugin add jam@jam-plugins
+```
+
+Codex uses `.codex-plugin/plugin.json` and the existing `jam-plugins` marketplace. It loads the Jam MCP server and the shared `jam:investigate-bug` and `jam:jam-cli` skills. Complete the OAuth prompt to sign in to Jam.
+
+To test an unreleased checkout, add its local marketplace instead:
+
+```bash
+codex plugin marketplace add /path/to/jam-plugin
+codex plugin add jam@jam-plugins
+```
+
+Start a new Codex session after installation. Run `/mcp` to check the Jam connection, then ask Codex to investigate a Jam link.
+
 ### GitHub Copilot CLI
 
 ```bash
@@ -65,7 +83,7 @@ Run `/mcp auth Jam` once to sign in. To test an unreleased version, run `gemini 
 
 ### OAuth
 
-The plugin connects to `https://mcp.jam.dev/mcp`. The first time your agent calls a Jam tool, a browser window opens so you can sign in to Jam. There is nothing else to set up.
+The plugin connects to `https://mcp.jam.dev/mcp`. Your agent prompts you to sign in to Jam in a browser during installation or when you first use a Jam tool. There is nothing else to set up.
 
 ### Personal access token
 
@@ -91,8 +109,8 @@ Each token works in one workspace, belongs to your account, and expires after se
 
 ## Check that it works
 
-1. Confirm **Jam** is in your agent's list of MCP servers. In Cursor, open **Customize**. In Claude Code or Gemini CLI, run `/mcp`. In GitHub Copilot CLI, run `copilot mcp list`.
-2. Paste a Jam link into the chat and ask the agent to analyze it. A browser window opens for sign-in on the first tool call.
+1. Confirm **Jam** is in your agent's list of MCP servers. In Cursor, open **Customize**. In Claude Code, Codex, or Gemini CLI, run `/mcp`. In GitHub Copilot CLI, run `copilot mcp list`.
+2. Paste a Jam link into the chat and ask the agent to analyze it. Complete the browser sign-in if prompted.
 3. Run the `investigate-bug` skill on a Jam link, such as `https://jam.dev/c/<id>`.
 
 ## What's included
