@@ -1,6 +1,6 @@
 {
   "name": "jam",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Jam's MCP is the fast lane between Jam recordings and your dev tools. Drop a Jam link into your coding agent and the whole recording – video, console, network, logs – arrives pre-packaged.",
   "author": { "name": "Jam", "email": "support@jam.dev" },
   "homepage": "https://jam.dev",

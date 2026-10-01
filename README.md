@@ -117,7 +117,7 @@ Each token works in one workspace, belongs to your account, and expires after se
 
 ### Jam MCP server
 
-The server at `https://mcp.jam.dev/mcp` has 33 tools.
+The server at `https://mcp.jam.dev/mcp` has 35 tools.
 
 **Investigate a Jam**
 
@@ -131,16 +131,19 @@ The server at `https://mcp.jam.dev/mcp` has 33 tools.
 | `getFrames` | Returns still frames from a video Jam, as a grid or at chosen timestamps |
 | `analyzeVideo` | Describes what the user was trying to do in a video |
 | `getVideoTranscript` | Returns the transcript of a video Jam recorded with the mic on |
-| `getVideoChapters` | Splits a video Jam into titled parts with start and end times |
+| `getVideoChapters` | Returns titled video chapters with start and end times, plus thumbnail links when available |
 | `getMetadata` | Returns custom metadata the page sent with `jam.metadata()` |
-| `search` | Finds a video Jam from a link or pasted text. For screenshot and replay Jams, use `listJams` |
+| `search` | Finds a video Jam from a link or pasted text. For screenshot and replay Jams, use `searchJams` |
 | `fetch` | Same as `getDetails` |
+
+Network filters (`statusCode`, `contentType`, `host`, and `method`) and the console `logLevel` filter take arrays. Values within a filter are ORed; separate filters are ANDed. Network, console, and user-event responses report `total` and `nextCursor`. Pass `nextCursor` as `after` to continue. Network response bodies default to failed requests (`bodies: "errors"`); `bodies: "all"` includes successful responses too. Bodies are truncated to 4KB and flagged per row.
 
 **Find and organize Jams**
 
 | Tool | What it does |
 |------|-------------|
-| `listJams` | Searches Jams by text, type, origin (capture surface), folder, author, URL, or date |
+| `searchJams` | Searches workspace Jams by text and structured filters, with date bounds and cursor pagination |
+| `listJams` | Deprecated. Uses the legacy search filters and pagination; use `searchJams` |
 | `listFolders` | Lists the folders in your workspace |
 | `createFolder` | Creates a folder |
 | `updateFolder` | Renames a folder. The Jams inside stay where they are |
@@ -150,6 +153,16 @@ The server at `https://mcp.jam.dev/mcp` has 33 tools.
 | `addReaction` | Adds a reaction to a comment |
 | `removeReaction` | Removes a reaction you added |
 | `updateJam` | Renames a Jam, edits its description, or moves it to another folder. Editing the title or description needs an Admin or Creator seat |
+
+Call `searchJams` with `v: 1`. Use `text` for text search, `where` for ANDed `{ field, op, value }` filters, `window` for date bounds, and `page` for the limit and cursor. Use `textIn` to restrict text matches to `title`, `description`, `comment`, `integration`, or `transcript`. When paging a relative-date search, reuse the absolute `window` from `executed.query.window` with the returned cursor. Repeating a relative bound such as `-P7D` changes the query and invalidates the cursor. Return each result's `url` unchanged so search attribution is preserved.
+
+**Feedback**
+
+| Tool | What it does |
+|------|-------------|
+| `submitFeedback` | Sends feedback about Jam to the Jam team for triage |
+
+The agent must show you the exact feedback text and get your approval before sending it. Send at most one report per session, under 200 words, with no secrets, customer data, source code, or stack traces. Do not report a mistake the agent corrected itself.
 
 **Delete**
 
@@ -225,7 +238,7 @@ Add the Jam link to the pull request. For a bug fix, ask for two Jams: one that 
 
 - The plugin connects only to `https://mcp.jam.dev/mcp`.
 - The OAuth scopes are `mcp:read` and `mcp:write`. Write access covers comments, reactions, folders, `updateJam`, the Recording Link tools that make changes, and the three `delete*` tools.
-- The server checks permissions for each workspace and each Jam. A token with only `mcp:read` can't change anything.
+- The server checks permissions for each workspace and each Jam. Workspace changes require `mcp:write`. `submitFeedback` uses `mcp:read`; the agent must get your approval of the exact text before sending feedback to the Jam team.
 - Every request sees only the Jams your account can already see.
 - `createFolder` and `createRecordingLink` can upgrade you from Viewer to Creator when your workspace allows it. That can change seat billing and sends an email to workspace Admins. `createRecordingLink` also sends a webhook event to your workspace's webhook subscribers.
 

@@ -31,16 +31,18 @@ The `getDetails` response includes an Investigation Guide built from real signal
 ### Step 3: Analyze Network Activity
 
 Call `getNetworkRequests` with filters to focus on problems:
-- `statusCode: "5xx"` for server failures, `"4xx"` for client errors
-- `host: "api.example.com"` to scope to a specific backend
-- `method: "POST"` for mutation failures
+- `statusCode: ["4xx", "5xx"]` for client and server failures
+- `host: ["api.example.com"]` to scope to a specific backend
+- `method: ["POST"]` for mutation failures
 - `limit` to cap output when a Jam is noisy
 
-Note CORS errors, timeouts, and unexpected response shapes.
+All network filters, including `contentType`, take arrays. Values are ORed within a filter and ANDed across filters. Network, console, and user-event responses include `total` and `nextCursor`. If the page is incomplete, narrow the filters or pass `nextCursor` as `after`.
+
+Network response bodies default to failed requests (`bodies: "errors"`). Use `bodies: "all"` to inspect a successful request that returned unexpected data. Bodies are truncated to 4KB and flagged per row. Note CORS errors, timeouts, and unexpected response shapes.
 
 ### Step 4: Check Console Errors
 
-Call `getConsoleLogs` with `logLevel: "error"` to find runtime errors.
+Call `getConsoleLogs` with `logLevel: ["error"]` to find runtime errors.
 - Look for unhandled exceptions, failed assertions, and stack traces.
 - Cross-reference timestamps with network errors and user events.
 - **Silent failure check:** if network shows 4xx/5xx but console is clean, the app may be swallowing errors — re-run with no `logLevel` filter.
@@ -58,6 +60,7 @@ Based on the Jam type from `getDetails`:
 - **Video Jams** — call `getFrames` with `overview: true` first: it returns a single timestamp-labeled grid of frames spanning the whole recording, the fastest way to see what happened on screen. Then sample around the failure with `at: [<ms>, ...]` or a `fromMs`/`toMs` window (max 30 frames per call; `size` controls resolution).
 - **Video Jams with mic** — also call `getVideoTranscript` (cheap, fast — the reporter's narration captures intent directly). If you need richer context, call `analyzeVideo` for extracted intents.
 - **Video Jams without mic** — use `getFrames` plus `analyzeVideo`.
+- For a longer video, use `getVideoChapters` to choose a chapter, then inspect its midpoint with `getFrames`. Chapters and timestamped video comments can include a public `thumbnailUrl` to share with a person.
 - `analyzeVideo` and `getFrames` short-circuit on non-video Jams, so always check the type first.
 
 ### Step 7: Check Custom Metadata
@@ -92,6 +95,10 @@ Compile findings into a structured report:
 ## Tips
 
 - Not all steps are needed for every bug. If the Investigation Guide from Step 2 gives you enough signal, skip straight to the diagnosis.
-- Use `listJams` to search for similar reports if the bug might be a recurring issue. Filter by `url`, `author`, `type`, `origin` (capture surface), or `createdAt` (supports ISO 8601 durations like `-P7D` for "last 7 days").
-- Add your findings back to the Jam with `createComment` (Markdown supported) so the team sees them. Pass `playbackRelativeTimestamp` to pin a comment to a specific moment in a video or replay.
+- Use `searchJams` for similar reports; `listJams` is deprecated. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. Use `capturedUrl` with `contains` to filter the recorded page URL. For later pages, reuse the absolute `window` from `executed.query.window` and pass the returned `page.cursor` in the next request's `page.cursor` while `page.hasMore` is true. Do not resend `-P7D`: it resolves to a new timestamp and invalidates the cursor. Return each result's `url` unchanged.
+- When the user asks, add your findings back to the Jam with `createComment` (Markdown supported) so the team sees them. Pass `playbackRelativeTimestamp` to pin a comment to a specific moment in a video or replay.
 - If a fresh Jam's event tools return "not ready yet," the Jam is still being processed — wait a few seconds and retry, or fall back to data that's already available.
+
+After fixing the bug, use `jam skills get jam-proof` for CLI guidance on recording or uploading proof.
+
+If a Jam tool, command, doc, or skill needs feedback, use `submitFeedback` only after showing the user the exact text and getting approval. Send at most once per session, under 200 words, with no secrets, customer data, source code, or stack traces. Do not report a mistake you corrected yourself.
