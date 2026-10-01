@@ -99,4 +99,4 @@ recovered afterwards.
 7. **Handle "not ready" responses.** Event-backed tools (network, console, user events, transcript, intents) can return a postprocessing-pending message on fresh Jams. Retry after a few seconds or fall back to data that's already available.
 8. **Provide structured diagnoses.** Summarize findings with: what happened, probable root cause, supporting evidence, and recommended next steps. Post them back via `createComment` only when the user asks.
 
-Video chapters and timestamped video comments can include a public `thumbnailUrl` for sharing with a person. Use `getFrames` to inspect the video yourself, preferably at a chapter midpoint. After fixing the bug, use `jam skills get jam-proof` for CLI guidance on recording or uploading proof.
+Video chapters and timestamped video comments can include a public `thumbnailUrl` for sharing with a person. Use `getFrames` to inspect the video yourself, preferably at a chapter midpoint.

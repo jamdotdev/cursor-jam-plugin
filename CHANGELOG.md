@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.23.2
+
+- Aligned the plugin version with Jam MCP 1.23.2, confirmed through production initialization.
+- Filled publication metadata, including the privacy policy URL.
+- Kept `jam-cli` for coding-agent plugins. Documented a separate ChatGPT upload that includes only the MCP investigation skill to address the external-code validation warning.
+
 ## 1.5.0
 
 - Synced with deployed Jam MCP 1.23.2 at [619c85f885c3](https://github.com/jamdotdev/apiofjam/commit/619c85f885c3782f77a49ef0bc68c4d87222d097), verified through production server initialization and its 35-tool inventory.

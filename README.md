@@ -254,6 +254,18 @@ Add the Jam link to the pull request. For a bug fix, ask for two Jams: one that 
 - [Jam MCP docs](https://jam.dev/docs/jam-mcp)
 - [Personal access tokens](https://jam.dev/docs/personal-access-tokens)
 
+## Prepare a release
+
+Keep the version consistent across `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and `gemini-extension.json`. Release 1.23.2 matches production MCP 1.23.2.
+
+The coding-agent plugins include both skills. For the ChatGPT directory, build a separate package containing only the MCP investigation skill. The CLI skill downloads or executes code outside the reviewed package and is excluded from that upload.
+
+```bash
+git archive --format=zip --prefix=jam/ --output=../jam-chatgpt-1.23.2.zip HEAD .codex-plugin mcp.json assets skills/investigate-bug LICENSE
+```
+
+For an existing ChatGPT app, update the existing app entry using its exported release ZIP and metadata. Preserve its saved identity and connection settings. Do not create a new app through **Upload New**. The command above builds the repository package; it does not recover saved portal metadata.
+
 ## License
 
 MIT. See [LICENSE](./LICENSE).

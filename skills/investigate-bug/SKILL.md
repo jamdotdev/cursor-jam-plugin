@@ -99,6 +99,4 @@ Compile findings into a structured report:
 - When the user asks, add your findings back to the Jam with `createComment` (Markdown supported) so the team sees them. Pass `playbackRelativeTimestamp` to pin a comment to a specific moment in a video or replay.
 - If a fresh Jam's event tools return "not ready yet," the Jam is still being processed — wait a few seconds and retry, or fall back to data that's already available.
 
-After fixing the bug, use `jam skills get jam-proof` for CLI guidance on recording or uploading proof.
-
 If a Jam tool, command, doc, or skill needs feedback, use `submitFeedback` only after showing the user the exact text and getting approval. Send at most once per session, under 200 words, with no secrets, customer data, source code, or stack traces. Do not report a mistake you corrected yourself.
