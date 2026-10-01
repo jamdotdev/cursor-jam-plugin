@@ -21,7 +21,7 @@
 
 Paste a Jam link into your coding agent, and it reads the recording, console logs, network requests, and user events on its own. You skip typing out repro steps and copying stack traces.
 
-The plugin works in Cursor, Claude Code, Codex, GitHub Copilot CLI, and Gemini CLI. In each one, it connects the Jam Model Context Protocol (MCP) server and adds two skills.
+The plugin works in Cursor, Claude Code, Codex, GitHub Copilot CLI, and Gemini CLI. In each one, it connects the Jam Model Context Protocol (MCP) server and adds the `investigate-bug` skill.
 
 ## Install the plugin
 
@@ -44,7 +44,7 @@ Then run **Developer: Reload Window** from the command palette (`Cmd+Shift+P`).
 /plugin install jam@jam-plugins
 ```
 
-The skills load as `/jam:investigate-bug` and `/jam:jam-cli`. To test an unreleased version, start Claude Code with `claude --plugin-dir /path/to/jam-plugin`.
+The skill loads as `/jam:investigate-bug`. To test an unreleased version, start Claude Code with `claude --plugin-dir /path/to/jam-plugin`.
 
 ### Codex
 
@@ -53,7 +53,7 @@ codex plugin marketplace add jamdotdev/jam-plugin
 codex plugin add jam@jam-plugins
 ```
 
-Codex uses `.codex-plugin/plugin.json` and the existing `jam-plugins` marketplace. It loads the Jam MCP server and the shared `jam:investigate-bug` and `jam:jam-cli` skills. Complete the OAuth prompt to sign in to Jam.
+Codex uses `.codex-plugin/plugin.json` and the existing `jam-plugins` marketplace. It loads the Jam MCP server and the shared `jam:investigate-bug` skill. Complete the OAuth prompt to sign in to Jam.
 
 To test an unreleased checkout, add its local marketplace instead:
 
@@ -197,12 +197,6 @@ A Recording Link captures console and network logs only when it starts on a veri
 
 Run `/investigate-bug <jam-link-or-id>` for a full investigation. The agent reads the Jam, follows the server's investigation guide, checks network requests, console logs, and user events, looks at the screenshots or video, and writes up the likely root cause.
 
-### Skill: Jam CLI
-
-`skills/jam-cli/SKILL.md`
-
-Teaches the agent to install the Jam CLI, sign in with `JAM_TOKEN` in headless environments, and read a Jam with `jam get`. It also shows how to run `jam skills install --target <agent> --project`, which adds the CLI's full command reference to your repository.
-
 ### Rule: Jam bug analysis
 
 `rules/jam-bug-analysis.mdc`
@@ -211,28 +205,7 @@ Cursor only, where it is always on. Other agents don't load rules. It tells the 
 
 ## Jam CLI
 
-The [Jam CLI](https://jam.dev/docs/cli) reads the same data in a terminal. It accepts the same personal access tokens as the MCP server.
-
-```bash
-curl -fsSL https://native.jam.dev/install | bash
-jam auth login                                 # or: export JAM_TOKEN=jam_pat_...
-jam get console <jam-link-or-id> --level error --json
-```
-
-On your own machine, use the MCP server in your agent. Use the CLI where MCP isn't set up, such as cloud agents, CI, and shell scripts that pipe `--json` output into other tools.
-
-### Record proof of a fix
-
-`jam record` records a window or display while a command runs, uploads the video, and returns a Jam link. Ask the agent to record the fix it made:
-
-```bash
-jam record windows --json
-jam record run --window-id <id> --title "Checkout completes after fix" -- bun run e2e/checkout.ts
-```
-
-To record a browser fix with its console logs and network requests, add `--cdp 9222` and start Chrome with `--remote-debugging-port=9222`. To record several steps instead of one command, run `jam record start`, do the steps, then run `jam record stop`.
-
-Add the Jam link to the pull request. For a bug fix, ask for two Jams: one that shows the bug and one that shows the fix. To turn an existing video or a Playwright `trace.zip` into a Jam without recording, run `jam create jam`. Recording works on macOS and Linux (X11).
+For terminal workflows and recording proof of a fix, see the [Jam CLI documentation](https://jam.dev/docs/cli). The CLI and its skill are not bundled with this plugin.
 
 ## Privacy and permissions
 
@@ -253,6 +226,19 @@ Add the Jam link to the pull request. For a bug fix, ask for two Jams: one that 
 - [Jam Chrome extension](https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci)
 - [Jam MCP docs](https://jam.dev/docs/jam-mcp)
 - [Personal access tokens](https://jam.dev/docs/personal-access-tokens)
+
+## Prepare a release
+
+The version sync script reads the production MCP `initialize` response. Set `JAM_TOKEN` in your environment to a Jam personal access token before running it.
+
+```bash
+bun scripts/sync-mcp-version.ts
+bun scripts/sync-mcp-version.ts --check
+```
+
+The script synchronizes `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `gemini-extension.json`. The `--check` command verifies the versions without changing files. Release 1.23.2 aligns the plugin version with production MCP 1.23.2. If that plugin version is already published, a packaging-only follow-up needs a new version in all four manifests. The script refuses to downgrade a newer package, and `--check` reports any difference from the server.
+
+For an existing ChatGPT app, update the existing app entry using the exported release ZIP and its metadata. Do not create a new app through **Upload New**.
 
 ## License
 
