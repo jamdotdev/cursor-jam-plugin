@@ -95,7 +95,7 @@ Compile findings into a structured report:
 ## Tips
 
 - Not all steps are needed for every bug. If the Investigation Guide from Step 2 gives you enough signal, skip straight to the diagnosis.
-- Use `searchJams` for similar reports; `listJams` is deprecated. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. Use `capturedUrl` with `contains` to filter the recorded page URL. Continue with the returned `page.cursor` while `page.hasMore` is true. Return each result's `url` unchanged.
+- Use `searchJams` for similar reports; `listJams` is deprecated. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. Use `capturedUrl` with `contains` to filter the recorded page URL. For later pages, reuse the absolute `window` from `executed.query.window` and pass the returned `page.cursor` in the next request's `page.cursor` while `page.hasMore` is true. Do not resend `-P7D`: it resolves to a new timestamp and invalidates the cursor. Return each result's `url` unchanged.
 - When the user asks, add your findings back to the Jam with `createComment` (Markdown supported) so the team sees them. Pass `playbackRelativeTimestamp` to pin a comment to a specific moment in a video or replay.
 - If a fresh Jam's event tools return "not ready yet," the Jam is still being processed — wait a few seconds and retry, or fall back to data that's already available.
 

@@ -154,7 +154,7 @@ Network filters (`statusCode`, `contentType`, `host`, and `method`) and the cons
 | `removeReaction` | Removes a reaction you added |
 | `updateJam` | Renames a Jam, edits its description, or moves it to another folder. Editing the title or description needs an Admin or Creator seat |
 
-Call `searchJams` with `v: 1`. Use `text` for text search, `where` for ANDed `{ field, op, value }` filters, `window` for date bounds, and `page` for the limit and cursor. Use `textIn` to restrict text matches to `title`, `description`, `comment`, `integration`, or `transcript`. Return each result's `url` unchanged so search attribution is preserved.
+Call `searchJams` with `v: 1`. Use `text` for text search, `where` for ANDed `{ field, op, value }` filters, `window` for date bounds, and `page` for the limit and cursor. Use `textIn` to restrict text matches to `title`, `description`, `comment`, `integration`, or `transcript`. When paging a relative-date search, reuse the absolute `window` from `executed.query.window` with the returned cursor. Repeating a relative bound such as `-P7D` changes the query and invalidates the cursor. Return each result's `url` unchanged so search attribution is preserved.
 
 **Feedback**
 

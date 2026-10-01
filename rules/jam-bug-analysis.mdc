@@ -16,7 +16,7 @@ When working with Jam bug reports, follow these guidelines to investigate issues
 
 - Jam URLs look like `https://jam.dev/c/<shortId>` or contain a UUID.
 - You can pass either a full URL or a UUID to any tool's `jamId` parameter (or `id` for `fetch`).
-- Use `search` if you have a URL or pasted text and need to resolve it to a Jam — it returns empty results when no UUID/URL can be extracted from the query. It only matches video Jams: a screenshot or replay Jam that exists still comes back empty, so use `searchJams` for those.
+- Use `search` if you have a URL or pasted text and need to resolve it to a Jam — it returns a validation error directing you to `searchJams` when no UUID or Jam URL can be extracted from the query. It only matches video Jams: a screenshot or replay Jam that exists still comes back empty, so use `searchJams` for those.
 - `fetch` is an alias for `getDetails` (kept for tools that expect the standard MCP `fetch` shape).
 
 ## Investigation Tools
@@ -52,7 +52,7 @@ Use these tools to drill into specific aspects of a bug report:
 | `removeReaction` | Take back a reaction you left |
 | `updateJam` | Rename a Jam, rewrite its description, or move it to a different folder (title and description edits need an Admin or Creator seat) |
 
-Use `searchJams` for discovery. Its `where` entries are ANDed `{ field, op, value }` leaves. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. Continue with the returned `page.cursor` in the next request's `page.cursor` while `page.hasMore` is true. Return each Jam's `url` unchanged.
+Use `searchJams` for discovery. Its `where` entries are ANDed `{ field, op, value }` leaves. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. For later pages, reuse the absolute `window` from `executed.query.window` and pass the returned `page.cursor` in the next request's `page.cursor` while `page.hasMore` is true. Do not resend a relative bound such as `-P7D`: it resolves to a new timestamp and invalidates the cursor. Return each Jam's `url` unchanged.
 
 ## Feedback
 
