@@ -25,7 +25,7 @@
     "longDescription": "Investigate Jam bug reports using recordings, console logs, network requests, and user events.",
     "developerName": "Jam",
     "category": "Developer Tools",
-    "capabilities": ["Interactive"],
+    "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://jam.dev",
     "defaultPrompt": "Investigate this Jam link and explain the likely root cause.",
     "logo": "./assets/logo.png",
