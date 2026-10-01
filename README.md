@@ -229,14 +229,7 @@ For terminal workflows and recording proof of a fix, see the [Jam CLI documentat
 
 ## Prepare a release
 
-The version sync script reads the production MCP `initialize` response. Set `JAM_TOKEN` in your environment to a Jam personal access token before running it.
-
-```bash
-bun scripts/sync-mcp-version.ts
-bun scripts/sync-mcp-version.ts --check
-```
-
-The script synchronizes `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `gemini-extension.json`. The `--check` command verifies the versions without changing files. Release 1.23.2 aligns the plugin version with production MCP 1.23.2. If that plugin version is already published, a packaging-only follow-up needs a new version in all four manifests. The script refuses to downgrade a newer package, and `--check` reports any difference from the server.
+Keep the version consistent across `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and `gemini-extension.json`. Release 1.23.2 matches production MCP 1.23.2.
 
 For an existing ChatGPT app, update the existing app entry using the exported release ZIP and its metadata. Do not create a new app through **Upload New**.
 

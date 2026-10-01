@@ -2,7 +2,7 @@
 
 ## 1.23.2
 
-- Aligned the plugin version with Jam MCP 1.23.2, confirmed through production initialization. Added a script to sync and check all four manifests.
+- Aligned the plugin version with Jam MCP 1.23.2, confirmed through production initialization.
 - Filled publication metadata, including the privacy policy URL.
 - Removed the bundled `jam-cli` skill and external CLI execution instructions to address submission validation. Kept the MCP investigation skill and a link to the CLI documentation.
 
