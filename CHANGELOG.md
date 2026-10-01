@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 1.5.0
 
+- Synced with deployed Jam MCP 1.23.2 at [619c85f885c3](https://github.com/jamdotdev/apiofjam/commit/619c85f885c3782f77a49ef0bc68c4d87222d097), verified through production server initialization and its 35-tool inventory.
+- Added `searchJams` guidance and marked `listJams` deprecated. Added `submitFeedback` with exact-text approval, privacy limits, and at most one submission per session.
+- Corrected event filter examples to arrays and documented cursor pagination, total counts, and network response-body limits.
+- Documented video thumbnail links and CLI proof capture guidance.
 - Added `.codex-plugin/plugin.json` with Jam listing metadata, reusing the existing MCP configuration, skills, and logo.
 - Documented Codex installation from GitHub and a local checkout using the existing `jam-plugins` marketplace.
 

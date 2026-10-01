@@ -16,7 +16,7 @@ When working with Jam bug reports, follow these guidelines to investigate issues
 
 - Jam URLs look like `https://jam.dev/c/<shortId>` or contain a UUID.
 - You can pass either a full URL or a UUID to any tool's `jamId` parameter (or `id` for `fetch`).
-- Use `search` if you have a URL or pasted text and need to resolve it to a Jam — it returns empty results when no UUID/URL can be extracted from the query. It only matches video Jams: a screenshot or replay Jam that exists still comes back empty, so use `listJams` for those.
+- Use `search` if you have a URL or pasted text and need to resolve it to a Jam — it returns empty results when no UUID/URL can be extracted from the query. It only matches video Jams: a screenshot or replay Jam that exists still comes back empty, so use `searchJams` for those.
 - `fetch` is an alias for `getDetails` (kept for tools that expect the standard MCP `fetch` shape).
 
 ## Investigation Tools
@@ -40,7 +40,8 @@ Use these tools to drill into specific aspects of a bug report:
 
 | Tool | Purpose |
 |------|---------|
-| `listJams` | Search and filter Jams by text, type, origin (capture surface), folder, author, URL, or date |
+| `searchJams` | Search workspace Jams with `v: 1`, `text`, structured `where` filters, `window`, and `page` |
+| `listJams` | Deprecated legacy search; use `searchJams` |
 | `listFolders` | Browse team folders |
 | `listMembers` | Find team members (useful for filtering by author) |
 | `createFolder` | Create a folder to file Jams into |
@@ -50,6 +51,12 @@ Use these tools to drill into specific aspects of a bug report:
 | `addReaction` | React to a comment on a Jam |
 | `removeReaction` | Take back a reaction you left |
 | `updateJam` | Rename a Jam, rewrite its description, or move it to a different folder (title and description edits need an Admin or Creator seat) |
+
+Use `searchJams` for discovery. Its `where` entries are ANDed `{ field, op, value }` leaves. For example, `{ v: 1, text: "checkout", window: { from: "-P7D" }, where: [{ field: "author", op: "eq", value: "me" }] }`. Continue with the returned `page.cursor` in the next request's `page.cursor` while `page.hasMore` is true. Return each Jam's `url` unchanged.
+
+## Feedback
+
+`submitFeedback` sends feedback to the Jam team. Show the user the exact text and get approval before calling it. Send at most once per session, with a body under 200 words. Never include secrets, customer data, source code, or stack traces. Do not report a mistake you corrected yourself.
 
 ## Recording Link Tools
 
@@ -86,8 +93,10 @@ recovered afterwards.
 1. **Follow the server's guidance.** The `getDetails` response includes an Investigation Guide with prioritized next steps — follow it instead of running every tool blindly.
 2. **Prefer the transcript for video Jams with mic.** When the reporter narrated, `getVideoTranscript` is higher priority than `analyzeVideo` — it's faster and captures intent directly.
 3. **Orient visually with `getFrames`.** For video Jams, `getFrames` with `overview: true` gives a timestamp-labeled grid of the whole recording in one call — cheaper than `analyzeVideo` when you just need to see what was on screen. Follow up with `at` timestamps around the moment of failure.
-4. **Filter aggressively.** Use `statusCode: "5xx"` or `logLevel: "error"` to focus on failures instead of fetching everything. Pass `host`/`method`/`limit` to narrow further on noisy Jams.
+4. **Filter aggressively.** Use `statusCode: ["4xx", "5xx"]` or `logLevel: ["error"]` to focus on failures instead of fetching everything. The `statusCode`, `contentType`, `host`, `method`, and `logLevel` filters take arrays. Values are ORed within a filter and ANDed across filters. Use `limit` to cap output. If the returned page has fewer entries than `total`, narrow the filters or pass `nextCursor` as `after`. Network bodies default to failed requests; request `bodies: "all"` to inspect successful responses. Bodies are truncated to 4KB and flagged per row.
 5. **Correlate across data sources.** Match network errors with console errors and user events to build a timeline of what went wrong.
 6. **Check the Jam type first.** `getScreenshots` only works for screenshot Jams; `analyzeVideo` short-circuits on non-video Jams; `getVideoTranscript` requires that the mic was enabled.
 7. **Handle "not ready" responses.** Event-backed tools (network, console, user events, transcript, intents) can return a postprocessing-pending message on fresh Jams. Retry after a few seconds or fall back to data that's already available.
-8. **Provide structured diagnoses.** Summarize findings with: what happened, probable root cause, supporting evidence, and recommended next steps. Consider posting them back via `createComment`.
+8. **Provide structured diagnoses.** Summarize findings with: what happened, probable root cause, supporting evidence, and recommended next steps. Post them back via `createComment` only when the user asks.
+
+Video chapters and timestamped video comments can include a public `thumbnailUrl` for sharing with a person. Use `getFrames` to inspect the video yourself, preferably at a chapter midpoint. After fixing the bug, use `jam skills get jam-proof` for CLI guidance on recording or uploading proof.
